@@ -82,7 +82,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Revenue</p>
-                <p className="text-2xl font-bold text-gray-800">€{stats.todayRevenue.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-gray-800">€{(parseFloat(stats.todayRevenue) || 0).toFixed(2)}</p>
               </div>
               <div className="bg-green-100 p-3 rounded-full">
                 <Euro className="h-6 w-6 text-green-600" />

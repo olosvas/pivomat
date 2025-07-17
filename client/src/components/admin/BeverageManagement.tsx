@@ -29,6 +29,8 @@ import { z } from 'zod';
 
 const beverageFormSchema = insertBeverageSchema.extend({
   volumeOptions: z.array(z.number()).min(1, 'At least one volume option is required'),
+  flowSensorPin: z.coerce.number().int().min(0).max(40),
+  valvePin: z.coerce.number().int().min(0).max(40),
 });
 
 type BeverageFormData = z.infer<typeof beverageFormSchema>;

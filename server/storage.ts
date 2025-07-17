@@ -58,16 +58,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createBeverage(beverage: InsertBeverage): Promise<Beverage> {
-    const [created] = await db.insert(beverages).values({
-      ...beverage,
-      updatedAt: new Date()
-    }).returning();
+    const [created] = await db.insert(beverages).values(beverage as any).returning();
     return created;
   }
 
   async updateBeverage(id: string, updates: Partial<InsertBeverage>): Promise<Beverage> {
     const [updated] = await db.update(beverages)
-      .set({ ...updates, updatedAt: new Date() })
+      .set(updates as any)
       .where(eq(beverages.id, id))
       .returning();
     return updated;
@@ -89,7 +86,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createOrder(order: InsertOrder): Promise<Order> {
-    const [created] = await db.insert(orders).values(order).returning();
+    const [created] = await db.insert(orders).values(order as any).returning();
     return created;
   }
 
@@ -147,7 +144,7 @@ export class DatabaseStorage implements IStorage {
     await db.update(beverages)
       .set({ 
         currentStock: newStock.toString(),
-        updatedAt: new Date()
+
       })
       .where(eq(beverages.id, beverageId));
 
