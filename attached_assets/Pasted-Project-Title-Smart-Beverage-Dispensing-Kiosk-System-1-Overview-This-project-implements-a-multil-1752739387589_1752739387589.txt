@@ -1,0 +1,191 @@
+Project Title: Smart Beverage Dispensing Kiosk System
+
+1. Overview
+
+This project implements a multilingual beverage-dispensing kiosk system using a Raspberry Pi 4B with a 7" touch display. It is designed to control multiple drink lines, each with its own valve and flow sensor, allowing customers to order drinks via a simple touchscreen interface. The system handles age verification (via camera AI or ID reader), secure local operation, and remote admin management via a web interface.
+
+2. Architecture Overview
+
+Frontend (Kiosk)
+
+Runs in fullscreen kiosk mode on Raspberry Pi
+
+Touchscreen interface in Slovak and English
+
+Local-only access
+
+Backend API (Node.js/Express)
+
+Handles logic, order processing, flow control
+
+Communicates with hardware via GPIO
+
+Admin Web Panel
+
+Accessible only over local network (Wi-Fi/LAN)
+
+Authentication protected (PIN/password)
+
+CRUD operations for drinks
+
+Access to logs and statistics
+
+3. Hardware Integration
+
+Required Devices:
+
+Raspberry Pi 4B
+
+7" Touch Display
+
+Flow sensors (YF-S301) – one per drink line
+
+Solenoid valves (12V, 6.5W) – one per drink line
+
+Camera module – for age verification
+
+(Optional) Weight sensor, cup dispenser, conveyor belt (planned)
+
+Pin Mapping:
+
+Each drink is mapped via configuration:
+
+{
+  "id": "beer1",
+  "name": "Beer",
+  "pricePerLitre": 2.5,
+  "volumeOptions": [0.3, 0.5],
+  "flowSensorPin": 17,
+  "valvePin": 27,
+  "totalLitres": 30
+}
+
+4. Kiosk App UI Flow
+
+Language selection
+
+Drink selection (with images, prices, and quantity options)
+
+Cart/Order Summary
+
+Adjust quantities
+
+Remove items
+
+Return to menu
+
+Age Verification (if alcoholic drinks selected)
+
+Consent screen (with YES/NO)
+
+Option 1: Live face scan + AI estimation (must look 22+)
+
+Option 2: Insert ID card into reader
+
+Payment simulation or integration
+
+Drink dispensing logic
+
+Open valve
+
+Count pulses from flow sensor
+
+Close valve after required volume
+
+5. Backend API
+
+Endpoints:
+
+GET /drinks – list all drinks
+
+POST /order – submit new order
+
+POST /verify-age/face – AI age verification
+
+POST /verify-age/idcard – fallback ID reader upload
+
+GET /status – system health
+
+Admin Panel:
+
+GET /admin/drinks – list drinks
+
+POST /admin/drinks – add new drink
+
+PUT /admin/drinks/:id – update drink config
+
+DELETE /admin/drinks/:id – delete drink
+
+GET /admin/logs – retrieve logs
+
+POST /admin/replenish – update remaining stock (manual refill)
+
+6. Drink Dispensing Logic
+
+Flow rate is calculated using pulses from the flow sensor
+
+Each sensor is independently associated with a drink
+
+Target pulse = desired volume * pulses_per_litre (e.g. 450)
+
+System continuously monitors flow count and stops valve after the exact amount is dispensed
+
+Remaining litres are decremented and logged
+
+7. Logs & Monitoring
+
+Each order logged: timestamp, items, language, age verification method
+
+Local database (e.g. SQLite or JSON) for persistent logs
+
+Prometheus endpoints or file export for use in Grafana
+
+8. Admin Mode Security
+
+Kiosk mode does not expose any system settings
+
+Admin panel accessible only via local network (localhost or LAN IP)
+
+Password or PIN protected
+
+Optional firewall rules/IP whitelisting for extra protection
+
+9. Setup Instructions
+
+Install Node.js and GPIO libraries (onoff, pigpio, etc.)
+
+Clone the repository and run setup script
+
+Install frontend as kiosk app (Electron or HTML in Chromium)
+
+Configure drinks.json with drink lines and GPIO mapping
+
+Run kiosk app on boot using systemd or pm2
+
+Admin panel starts on different port (e.g. 8080)
+
+Set up static IP or local hostname for remote access
+
+10. Automated Tests
+
+Unit tests for drink logic and flow calculation
+
+Mock hardware layer to simulate GPIO input/output
+
+Integration tests for order processing
+
+Test scripts can be run with npm test
+
+11. Future Extensions
+
+Integrate cup dispenser & conveyor control
+
+Add real payment gateway
+
+Connect to cloud or NAS for log backup
+
+Extend age verification with document OCR
+
+Add camera motion detection to avoid photo spoofing
+
+This specification is designed to be directly usable as a task for Replit Agents or full-stack developers working with JavaScript on Raspberry Pi hardware.
