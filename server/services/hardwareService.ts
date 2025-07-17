@@ -12,6 +12,8 @@ export class HardwareService {
   private valveStates: Map<number, boolean> = new Map();
   private flowStates: Map<number, number> = new Map();
   private pulsesPerLiter = 450; // YF-S301 sensor specification
+  private isProduction = process.env.NODE_ENV === 'production' || process.env.HARDWARE_MODE === 'production';
+  private gpio: any = null;
 
   constructor() {
     // Initialize GPIO states
@@ -19,34 +21,68 @@ export class HardwareService {
   }
 
   private initializeGPIO(): void {
-    // Mock GPIO initialization
     console.log('Initializing GPIO pins...');
     
-    // In a real implementation, this would initialize the GPIO library
-    // For now, we'll simulate the hardware state
+    if (this.isProduction) {
+      try {
+        // Try to import rpi-gpio for production environment
+        this.gpio = require('rpi-gpio');
+        console.log('Production mode: GPIO hardware control enabled');
+        
+        // Setup GPIO pins for output (valves)
+        // We'll configure pins dynamically when needed
+      } catch (error) {
+        console.warn('GPIO module not available, falling back to simulation mode');
+        this.isProduction = false;
+      }
+    } else {
+      console.log('Development mode: GPIO simulation enabled');
+    }
   }
 
   async openValve(pin: number): Promise<void> {
     console.log(`Opening valve on pin ${pin}`);
+    
+    if (this.isProduction && this.gpio) {
+      try {
+        // Configure pin as output if not already configured
+        await this.gpio.setup(pin, this.gpio.DIR_OUT);
+        // Set pin HIGH to activate relay (normally closed relay)
+        await this.gpio.write(pin, true);
+      } catch (error) {
+        console.error(`Failed to control GPIO pin ${pin}:`, error);
+      }
+    }
+    
     this.valveStates.set(pin, true);
     
     // Log hardware action
     await storage.createSystemLog({
       level: 'info',
       message: `Valve opened on pin ${pin}`,
-      context: { pin, action: 'open' }
+      context: { pin, action: 'open', mode: this.isProduction ? 'production' : 'simulation' }
     });
   }
 
   async closeValve(pin: number): Promise<void> {
     console.log(`Closing valve on pin ${pin}`);
+    
+    if (this.isProduction && this.gpio) {
+      try {
+        // Set pin LOW to deactivate relay
+        await this.gpio.write(pin, false);
+      } catch (error) {
+        console.error(`Failed to control GPIO pin ${pin}:`, error);
+      }
+    }
+    
     this.valveStates.set(pin, false);
     
     // Log hardware action
     await storage.createSystemLog({
       level: 'info',
       message: `Valve closed on pin ${pin}`,
-      context: { pin, action: 'close' }
+      context: { pin, action: 'close', mode: this.isProduction ? 'production' : 'simulation' }
     });
   }
 

@@ -1,0 +1,15 @@
+{
+  "raspberry-pi-dependencies": {
+    "rpi-gpio": "^2.1.7",
+    "onoff": "^6.0.3"
+  },
+  "installation-commands": [
+    "npm install rpi-gpio@^2.1.7",
+    "npm install onoff@^6.0.3"
+  ],
+  "notes": [
+    "These dependencies are only needed on Raspberry Pi hardware",
+    "They will automatically be used when HARDWARE_MODE=production",
+    "The application will fall back to simulation mode if GPIO is not available"
+  ]
+}
