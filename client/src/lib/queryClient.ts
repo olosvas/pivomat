@@ -23,7 +23,7 @@ export async function apiRequest(
     },
     body: data ? JSON.stringify(data) : undefined,
     mode: baseUrl ? "cors" : "same-origin",
-    credentials: baseUrl ? "omit" : "include",
+    credentials: "include",
   });
 
   await throwIfResNotOk(res);
@@ -44,7 +44,7 @@ export const getQueryFn: <T>(options: {
         "Accept": "application/json",
       },
       mode: baseUrl ? "cors" : "same-origin",
-      credentials: baseUrl ? "omit" : "include",
+      credentials: "include",
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
