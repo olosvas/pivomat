@@ -67,9 +67,9 @@ pm2 startup
 # 9. Čakať na spustenie
 sleep 5
 
-# 10. Test produkčného API
+# 10. Test produkčného API s credentials
 echo "🧪 Testovanie produkčného API..."
-curl -s -H "Accept: application/json" "https://smart-beverage-dispenser-uzisinapoj.replit.app/api/beverages" | head -c 200
+curl -s -H "Accept: application/json" -H "Origin: http://localhost:3000" "https://smart-beverage-dispenser-uzisinapoj.replit.app/api/beverages" | head -c 200
 
 echo ""
 echo "🧪 Testovanie lokálneho kiosku..."
