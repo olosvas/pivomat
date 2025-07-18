@@ -21,7 +21,7 @@ export PORT=3000
 export HARDWARE_MODE=production
 
 # 4. Spustiť aplikáciu
-pm2 start ecosystem.config.js --env development
+pm2 start ecosystem.config.cjs --env development
 
 # 5. Čakať na spustenie
 sleep 5
