@@ -91,7 +91,7 @@ pm2 delete beverage-kiosk 2>/dev/null || true
 
 # Spustiť aplikáciu
 echo "🚀 Spúšťam aplikáciu..."
-pm2 start ecosystem.config.cjs --env development
+pm2 start deployment/ecosystem.config.cjs --env development
 
 # Uložiť PM2 konfiguráciu
 pm2 save
