@@ -15,7 +15,7 @@ EOF
 
 # Vytvor ecosystem.config.js pre PM2
 echo "📝 Vytváram PM2 konfiguráciu..."
-cat > ecosystem.config.js << 'EOF'
+cat > ecosystem.config.cjs << 'EOF'
 module.exports = {
   apps: [{
     name: 'beverage-kiosk',
@@ -56,7 +56,7 @@ pm2 delete beverage-kiosk 2>/dev/null || true
 
 # Spustiť aplikáciu
 echo "🚀 Spúšťam aplikáciu..."
-pm2 start ecosystem.config.js --env production
+pm2 start ecosystem.config.cjs --env production
 
 # Uložiť PM2 konfiguráciu
 pm2 save
