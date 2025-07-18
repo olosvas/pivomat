@@ -4,15 +4,17 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
-// CORS middleware for cross-origin requests
+// CORS middleware for cross-origin requests (especially for Raspberry Pi)
 app.use((req, res, next) => {
+  // Allow all origins for API endpoints
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control');
+  res.header('Access-Control-Allow-Credentials', 'false'); // Set to false when using wildcard origin
   
+  // Handle preflight requests
   if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
+    res.status(200).end();
     return;
   }
   
