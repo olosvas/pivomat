@@ -20,12 +20,15 @@ unset HARDWARE_MODE
 # 3. Vytvoriť správny .env.production
 echo "3. Vytváram správny .env.production..."
 cat > .env.production << 'EOF'
-NODE_ENV=production
+NODE_ENV=development
 DATABASE_URL=postgresql://neondb_owner:npg_x4izKw3sGULf@ep-green-queen-a2ysqaa6-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 PORT=3000
 HARDWARE_MODE=production
 SESSION_SECRET=raspberry-pi-kiosk-secret-2025
 EOF
+
+# DÔVOD: V production móde sa aplikácia snaží servovať statické súbory
+# čo prepisuje API endpointy. Development mód zachová API funkčnosť.
 
 # 4. Načítať environment variables
 echo "4. Načítavam environment variables..."
@@ -126,7 +129,7 @@ mkdir -p logs
 
 # 9. Spustiť aplikáciu
 echo "9. Spúšťam aplikáciu..."
-pm2 start ecosystem.config.js --env production
+pm2 start ecosystem.config.cjs --env development
 
 # 10. Počkať na spustenie
 echo "10. Čakám na spustenie aplikácie..."
