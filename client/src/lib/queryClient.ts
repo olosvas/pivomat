@@ -17,9 +17,13 @@ export async function apiRequest(
   
   const res = await fetch(fullUrl, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers: {
+      ...(data ? { "Content-Type": "application/json" } : {}),
+      "Accept": "application/json",
+    },
     body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
+    mode: baseUrl ? "cors" : "same-origin",
+    credentials: baseUrl ? "omit" : "include",
   });
 
   await throwIfResNotOk(res);
@@ -36,7 +40,11 @@ export const getQueryFn: <T>(options: {
     const url = baseUrl + queryKey.join("/");
     
     const res = await fetch(url, {
-      credentials: "include",
+      headers: {
+        "Accept": "application/json",
+      },
+      mode: baseUrl ? "cors" : "same-origin",
+      credentials: baseUrl ? "omit" : "include",
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
