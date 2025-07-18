@@ -1,25 +1,32 @@
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
-// CORS middleware for cross-origin requests (especially for Raspberry Pi)
-app.use((req, res, next) => {
-  // Allow all origins for API endpoints
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control');
-  res.header('Access-Control-Allow-Credentials', 'false'); // Set to false when using wildcard origin
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-  
-  next();
-});
+// CORS configuration for Raspberry Pi and local development
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'http://raspberrypi.local:3000',
+    'http://192.168.1.100:3000', // Common Pi IP
+    'http://192.168.1.101:3000',
+    'http://192.168.1.102:3000',
+    'http://192.168.1.103:3000',
+    'http://192.168.1.104:3000',
+    'http://192.168.1.105:3000',
+    // Add more Pi IP ranges as needed
+    /^http:\/\/192\.168\.1\.\d+:3000$/,
+    /^http:\/\/192\.168\.0\.\d+:3000$/,
+    /^http:\/\/10\.0\.0\.\d+:3000$/
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'Cache-Control'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
