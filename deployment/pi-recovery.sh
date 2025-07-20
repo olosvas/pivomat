@@ -5,7 +5,7 @@ echo "🔧 Raspberry Pi Kiosk Recovery"
 echo "=============================="
 
 # Navigate to app directory
-cd /home/pi/kiosk-app || {
+cd /home/oliver/kiosk-app || {
     echo "❌ App directory not found. Running setup first..."
     exit 1
 }
