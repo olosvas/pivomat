@@ -7,7 +7,7 @@ echo "====================================="
 # Check if we're in the right directory
 if [ ! -f "package.json" ]; then
     echo "📁 Navigating to app directory..."
-    cd /home/pi/kiosk-app
+    cd /home/oliver/kiosk-app
 fi
 
 echo "📊 Current Status Check:"
