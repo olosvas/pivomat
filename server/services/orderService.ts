@@ -93,29 +93,78 @@ export class OrderService {
   }
 
   private async dispenseItem(item: OrderItem, orderId: number): Promise<void> {
+    const MAX_CUP_VOLUME = 0.5; // Maximum volume per cup in liters
+    let remaining = item.volume;
+    let cupCount = 0;
+
     try {
-      await hardwareService.dispenseVolume(item.beverageId, item.volume);
+      while (remaining > 0) {
+        const portion = Math.min(remaining, MAX_CUP_VOLUME);
+        cupCount++;
+        
+        // Wait for cup to be placed
+        await hardwareService.waitForCup();
+        
+        // In future versions, automatically dispense cup
+        // await hardwareService.dispenseCup();
+        
+        // Dispense the beverage portion
+        await hardwareService.dispenseVolume(item.beverageId, portion);
+        
+        remaining -= portion;
+        
+        // Log each dispensing step
+        await storage.createSystemLog({
+          level: 'info',
+          message: `Dispensed ${portion}L of ${item.name} (cup ${cupCount})`,
+          context: { 
+            orderId,
+            beverageId: item.beverageId,
+            portionVolume: portion,
+            remainingVolume: remaining,
+            cupNumber: cupCount,
+            totalVolume: item.volume
+          }
+        });
+        
+        // If more portions needed, prompt for next cup
+        if (remaining > 0) {
+          await storage.createSystemLog({
+            level: 'info',
+            message: `Multiple cups required: ${remaining}L remaining`,
+            context: { 
+              orderId,
+              beverageId: item.beverageId,
+              remainingVolume: remaining,
+              nextCupNumber: cupCount + 1
+            }
+          });
+        }
+      }
       
-      // Log successful dispensing
+      // Log completion of item dispensing
       await storage.createSystemLog({
         level: 'info',
-        message: `Dispensed ${item.volume}L of ${item.name}`,
+        message: `Completed dispensing ${item.volume}L of ${item.name} using ${cupCount} cup(s)`,
         context: { 
           orderId,
           beverageId: item.beverageId,
-          volume: item.volume
+          totalVolume: item.volume,
+          cupsUsed: cupCount
         }
       });
       
     } catch (error) {
-      // Log dispensing error
+      // Log dispensing error with context
       await storage.createSystemLog({
         level: 'error',
-        message: `Failed to dispense ${item.name}`,
+        message: `Failed to dispense ${item.name} after ${cupCount} cup(s)`,
         context: { 
           orderId,
           beverageId: item.beverageId,
-          volume: item.volume,
+          totalVolume: item.volume,
+          dispensedVolume: item.volume - remaining,
+          cupsUsed: cupCount,
           error: error instanceof Error ? error.message : 'Unknown error'
         }
       });

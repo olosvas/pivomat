@@ -3,7 +3,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useCart } from '@/hooks/useCart';
 import { formatPrice, formatVolume } from '@/lib/kioskUtils';
-import { ShoppingCart, Plus, Minus, X } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, Coffee } from 'lucide-react';
+import CupWarning from './CupWarning';
 
 interface CartProps {
   onCheckout: () => void;
@@ -18,6 +19,12 @@ export default function Cart({ onCheckout }: CartProps) {
     if (item) {
       updateQuantity(itemId, item.volume + delta);
     }
+  };
+
+  const calculateTotalCups = () => {
+    return items.reduce((total, item) => {
+      return total + Math.ceil(item.volume / 0.5); // Max 0.5L per cup
+    }, 0);
   };
 
   return (
@@ -46,6 +53,12 @@ export default function Cart({ onCheckout }: CartProps) {
                       <p className="text-xs text-gray-600">
                         {formatVolume(item.volume)} × {formatPrice(item.pricePerLiter)}
                       </p>
+                      {Math.ceil(item.volume / 0.5) > 1 && (
+                        <div className="flex items-center gap-1 text-xs text-orange-600 mt-1">
+                          <Coffee className="h-3 w-3" />
+                          <span>{Math.ceil(item.volume / 0.5)} cups needed</span>
+                        </div>
+                      )}
                     </div>
                     <Button
                       variant="ghost"
@@ -93,6 +106,11 @@ export default function Cart({ onCheckout }: CartProps) {
       </div>
       
       <div className="border-t border-gray-200 pt-4">
+        <CupWarning 
+          cupsNeeded={calculateTotalCups()} 
+          isVisible={items.length > 0 && calculateTotalCups() > 1} 
+        />
+        
         <div className="flex justify-between items-center text-lg font-semibold text-gray-800 mb-4">
           <span>{t('total')}:</span>
           <span>{formatPrice(total)}</span>

@@ -1,0 +1,84 @@
+🔐 1. Secure the /admin route
+Currently, the /admin page is accessible from the kiosk interface without authentication. This is a security risk.
+
+Tasks:
+
+Create an AuthContext to manage authentication state (e.g., isAuthenticated).
+
+Add a simple login system (e.g., hardcoded password from .env or prompt on first access).
+
+Implement a ProtectedRoute component that:
+
+Only renders the AdminPage when isAuthenticated === true.
+
+Redirects to / or a login screen otherwise.
+
+App.tsx route change:
+
+Replace:
+
+tsx
+Kopírovať
+Upraviť
+<Route path="/admin" component={AdminPage} />
+With:
+
+tsx
+Kopírovať
+Upraviť
+<ProtectedRoute path="/admin" component={AdminPage} />
+🧮 2. Enforce glass size limits (max 0.5L)
+The order flow currently allows volumes like 0.7L, but does not account for glass capacity. This must be fixed.
+
+Tasks:
+
+Update orderService.ts (in dispenseItem() or similar) to:
+
+Split total volume into smaller pours (max 0.5L per cup).
+
+Wait for a cup (placeholder: await hardwareService.waitForCup()).
+
+Dispense in multiple steps if necessary.
+
+Example logic:
+
+ts
+Kopírovať
+Upraviť
+const MAX_CUP_VOLUME = 0.5;
+let remaining = item.volume;
+
+while (remaining > 0) {
+  const portion = Math.min(remaining, MAX_CUP_VOLUME);
+  await hardwareService.waitForCup(); // Wait for cup to be inserted
+  await hardwareService.dispenseVolume(item.beverageId, portion);
+  remaining -= portion;
+}
+🧃 3. Prepare for future cup dispenser integration
+We plan to automatically dispense cups in future hardware iterations.
+
+Tasks:
+
+Structure the code to later insert a call to:
+
+ts
+Kopírovať
+Upraviť
+await hardwareService.dispenseCup();
+Add a HARDWARE_MODE=production check to avoid calling physical hardware in dev mode.
+
+🎨 4. Differentiate kiosk mode and admin mode visually
+Tasks:
+
+Clearly style the /admin page differently from the kiosk interface.
+
+Disable back-navigation from / to /admin via UI.
+
+Consider adding a hidden gesture or physical switch to access admin mode.
+
+📦 5. Optional: Display warnings for insufficient cup supply
+Once cup inventory is tracked:
+
+Warn the user if the system cannot fulfill the order due to lack of cups.
+
+Disable ordering until replenished.

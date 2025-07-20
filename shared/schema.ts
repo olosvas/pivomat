@@ -57,6 +57,17 @@ export const inventoryLogs = pgTable("inventory_logs", {
   timestamp: timestamp("timestamp").defaultNow()
 });
 
+// Cup supply tracking for future hardware integration
+export const cupInventory = pgTable("cup_inventory", {
+  id: serial("id").primaryKey(),
+  cupType: text("cup_type").notNull().default("standard"), // "standard", "large", etc.
+  currentStock: integer("current_stock").notNull().default(0),
+  minimumThreshold: integer("minimum_threshold").notNull().default(10),
+  maxCapacity: integer("max_capacity").notNull().default(100),
+  lastReplenished: timestamp("last_replenished").defaultNow(),
+  isActive: boolean("is_active").default(true)
+});
+
 export const beverageRelations = relations(beverages, ({ many }) => ({
   inventoryLogs: many(inventoryLogs)
 }));
@@ -113,3 +124,6 @@ export type SystemLog = typeof systemLogs.$inferSelect;
 export type InsertSystemLog = z.infer<typeof insertSystemLogSchema>;
 export type InventoryLog = typeof inventoryLogs.$inferSelect;
 export type InsertInventoryLog = z.infer<typeof insertInventoryLogSchema>;
+
+export type InsertCupInventory = typeof cupInventory.$inferInsert;
+export type CupInventory = typeof cupInventory.$inferSelect;

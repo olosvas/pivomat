@@ -154,6 +154,44 @@ export class HardwareService {
     }
   }
 
+  async waitForCup(): Promise<void> {
+    // In production mode, this would interface with cup sensor hardware
+    if (this.isProduction) {
+      // TODO: Implement actual cup detection logic
+      // For now, simulate waiting for cup placement
+      console.log('Waiting for cup to be placed...');
+      await new Promise(resolve => setTimeout(resolve, 2000)); // 2 second wait
+    } else {
+      // Development mode: simulate cup placement
+      console.log('Simulating cup placement...');
+      await new Promise(resolve => setTimeout(resolve, 500)); // 0.5 second wait
+    }
+    
+    await storage.createSystemLog({
+      level: 'info',
+      message: 'Cup detected and ready for dispensing',
+      context: { mode: this.isProduction ? 'production' : 'simulation' }
+    });
+  }
+
+  async dispenseCup(): Promise<void> {
+    // Future implementation for automatic cup dispensing
+    if (this.isProduction) {
+      console.log('Dispensing cup via hardware...');
+      // TODO: Implement actual cup dispensing logic
+      await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second for cup dispensing
+    } else {
+      console.log('Simulating cup dispensing...');
+      await new Promise(resolve => setTimeout(resolve, 300)); // 0.3 second simulation
+    }
+    
+    await storage.createSystemLog({
+      level: 'info',
+      message: 'Cup dispensed successfully',
+      context: { mode: this.isProduction ? 'production' : 'simulation' }
+    });
+  }
+
   getHardwareStatus(): HardwareStatus[] {
     const status: HardwareStatus[] = [];
     
