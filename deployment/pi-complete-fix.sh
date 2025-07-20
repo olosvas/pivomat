@@ -4,7 +4,7 @@
 echo "🔧 Complete Raspberry Pi Kiosk Fix"
 echo "=================================="
 
-cd /home/pi/kiosk-app || {
+cd /home/oliver/kiosk-app || {
     echo "❌ App directory not found"
     exit 1
 }
@@ -21,7 +21,7 @@ module.exports = {
     name: 'kiosk-app',
     script: 'npm',
     args: 'start',
-    cwd: '/home/pi/kiosk-app',
+    cwd: '/home/oliver/kiosk-app',
     env: {
       NODE_ENV: 'production',
       HARDWARE_MODE: 'production'
