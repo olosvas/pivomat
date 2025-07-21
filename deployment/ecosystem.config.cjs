@@ -1,10 +1,11 @@
 module.exports = {
   apps: [{
     name: 'beverage-kiosk',
-    script: './dist/server/index.js',
+    script: './dist/index.js',
     env: {
-      NODE_ENV: 'development',
+      NODE_ENV: 'production',
       PORT: 3000,
+      HARDWARE_MODE: 'production',
       DATABASE_URL: 'postgresql://neondb_owner:npg_x4izKw3sGULf@ep-green-queen-a2ysqaa6-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
     },
     env_production: {
