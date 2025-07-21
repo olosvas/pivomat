@@ -70,7 +70,13 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    // Simple static serving for production - bypass the problematic serveStatic function
+    const path = require("path");
+    const distPath = path.resolve(process.cwd(), "dist", "public");
+    app.use(require("express").static(distPath));
+    app.use("*", (_req, res) => {
+      res.sendFile(path.resolve(distPath, "index.html"));
+    });
   }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
