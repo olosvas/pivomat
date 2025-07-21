@@ -8,7 +8,7 @@ module.exports = {
       DATABASE_URL: 'postgresql://neondb_owner:npg_x4izKw3sGULf@ep-green-queen-a2ysqaa6-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
     },
     env_production: {
-      NODE_ENV: 'development',
+      NODE_ENV: 'production',
       PORT: 3000,
       HARDWARE_MODE: 'production',
       DATABASE_URL: 'postgresql://neondb_owner:npg_x4izKw3sGULf@ep-green-queen-a2ysqaa6-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
